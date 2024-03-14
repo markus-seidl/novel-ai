@@ -16,6 +16,9 @@ MODEL_NAME = "Wizard-Vicuna-30B-Uncensored.Q5_K_S.gguf"
 # MODEL_NAME = "tinyllama-1.1b-intermediate-step-1431k-3t.Q5_K_S.gguf"
 
 MODEL_PATH = os.path.dirname(os.path.abspath(__file__)) + "/../temp/"
+MODEL = None
+
+TEMPLATE = "A chat between a curious user and an artificial intelligence assistant. The assistant gives helpful, detailed, and polite answers to the user's questions.\n### USER: {0}\n### ASSISTANT:\n"
 
 
 def download_model():
@@ -23,15 +26,17 @@ def download_model():
     urllib.request.urlretrieve(MODEL_DL, MODEL_PATH + MODEL_NAME)
 
 
-print("Loading model...")
-MODEL = GPT4All(model_name=MODEL_NAME,
-                model_path=MODEL_PATH)
-print("...done.")
-
-TEMPLATE = "A chat between a curious user and an artificial intelligence assistant. The assistant gives helpful, detailed, and polite answers to the user's questions.\n### USER: {0}\n### ASSISTANT:\n"
+def ensure_model():
+    global MODEL
+    if MODEL is None:
+        print("Loading model...")
+        MODEL = GPT4All(model_name=MODEL_NAME,
+                        model_path=MODEL_PATH)
+        print("...done.")
 
 
 def summarize_text(text, length):
+    ensure_model()
     with MODEL.chat_session(TEMPLATE):
         # response = MODEL.generate(f"Summarize the following text into {length} sentences: {text}")
         response = MODEL.generate(
