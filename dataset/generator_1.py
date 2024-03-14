@@ -3,7 +3,7 @@ import json
 
 from entities import Book, Chapter, TrainingData
 from book_parser import load_book
-from nop_summarizer import summarize_text
+import llama_summarizer as summarizer
 import tqdm
 import zstandard as zstd
 
@@ -23,7 +23,7 @@ def convert_to_trainingdata(book: Book) -> [TrainingData]:
             previous_sentences = chapter.sentences[i - PREVIOUS_SENTENCES:i]
             summary_sentences = " ".join(chapter.sentences[i - PREVIOUS_SENTENCES:i + NEXT_SENTENCES])
 
-            summary = summarize_text(summary_sentences, SUMMARY_LENGTH)
+            summary = summarizer.summarize_text(summary_sentences, SUMMARY_LENGTH)
 
             temp = TrainingData(
                 book_title=book.title,
@@ -48,6 +48,8 @@ def write_and_compress(training_datas: [TrainingData], outfile: str):
 
 
 def generate_for(input_file: str, output_file: str):
+    summarizer.ensure_model()
+
     book = load_book(input_file)
     tds = convert_to_trainingdata(book)
     write_and_compress(tds, output_file)
