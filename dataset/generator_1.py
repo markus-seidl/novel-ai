@@ -43,8 +43,14 @@ def write_and_compress(training_datas: [TrainingData], outfile: str):
     cctx = zstd.ZstdCompressor()
     compressed_data = cctx.compress(json_data)
 
-    with open(outfile , 'wb') as file: # + '.zst'
+    with open(outfile, 'wb') as file:  # + '.zst'
         file.write(json_data)
+
+
+def generate_for(input_file: str, output_file: str):
+    book = load_book(input_file)
+    tds = convert_to_trainingdata(book)
+    write_and_compress(tds, output_file)
 
 
 if __name__ == '__main__':
