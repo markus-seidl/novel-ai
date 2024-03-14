@@ -1,0 +1,7 @@
+nltk
+bert-extractive-summarizer
+sentence-transformers
+torch
+gpt4all
+tqdm
+zstandard
