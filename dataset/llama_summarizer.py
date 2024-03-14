@@ -17,9 +17,11 @@ MODEL_NAME = "Wizard-Vicuna-30B-Uncensored.Q5_K_S.gguf"
 
 MODEL_PATH = os.path.dirname(os.path.abspath(__file__)) + "/../temp/"
 
-if not os.path.exists(MODEL_PATH + MODEL_NAME):
+
+def download_model():
     print(f"Downloading summarizer model: {MODEL_NAME}")
     urllib.request.urlretrieve(MODEL_DL, MODEL_PATH + MODEL_NAME)
+
 
 print("Loading model...")
 MODEL = GPT4All(model_name=MODEL_NAME,
