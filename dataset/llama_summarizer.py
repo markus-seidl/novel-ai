@@ -1,5 +1,6 @@
 import os
 
+import torch
 from gpt4all import GPT4All
 from nltk import sent_tokenize
 import urllib.request
@@ -31,9 +32,14 @@ def download_model():
 def ensure_model():
     global MODEL
     if MODEL is None:
-        print("Loading model...")
-        MODEL = GPT4All(model_name=MODEL_NAME,
-                        model_path=MODEL_PATH)
+        device = "gpu" if torch.cuda.is_available() else "cpu"
+
+        print(f"Loading model for device <{device}>...")
+        MODEL = GPT4All(
+            model_name=MODEL_NAME,
+            model_path=MODEL_PATH,
+            device=device
+        )
         print("...done.")
 
 

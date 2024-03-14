@@ -57,8 +57,8 @@ def generate_for(input_file: str, output_file: str):
 
 if __name__ == '__main__':
     # /Volumes/Dia/ai-data/anna-manual/
-    book_file = "aae8a9a0b14d2b900704cfc1e2ac3eb9.txt"
-    # book_file = "b0845a13375a4fb410e753ec526a8e3f.txt"
+    # book_file = "aae8a9a0b14d2b900704cfc1e2ac3eb9.txt"
+    book_file = "b0845a13375a4fb410e753ec526a8e3f.txt"
     # book_file = "055cc96d3c8a23505a6e6b353b773cd2.txt"
     # book_file = "a2a8b19cdddea509540191833a1364fc.txt"
     book = load_book(book_file)
