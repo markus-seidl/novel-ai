@@ -18,11 +18,11 @@ def summarize_text(text, length_chars) -> str:
 
     SUMI.set_inference_params({"max_length": length_chars})
 
-    length_it = trange(3, leave=False)
-    length_it.set_description("My Summaries ")
-    for i in length_it:
+    # length_it = trange(3, leave=False)
+    # length_it.set_description("My Summaries ")
+    for i in range(3):
         text = SUMI.summarize_string(text, disable_progress_bar=True)
-        length_it.set_description("My Summaries (" + str(len(text)) + ")")
+        # length_it.set_description("My Summaries (" + str(len(text)) + ")")
         if len(text) <= length_chars * 2 or length_chars < 0:
             return text
 
