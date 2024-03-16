@@ -19,13 +19,15 @@ def convert_to_trainingdata(book: Book, title: str) -> [TrainingData]:
     ret = []
     chapter_bar = tqdm(book.chapters)
     for chapter in chapter_bar:
-        chapter_bar.set_description(chapter.title)
+        chapter_bar.set_description("Chapter " + str(chapter))
 
         # create chapter summary
         chapter_text = " ".join(chapter.sentences)
         chapter_summary = summarizer.summarize_text(chapter_text, SUMMARY_LENGTH)
 
-        for i in trange(PREVIOUS_SENTENCES, len(chapter.sentences) - NEXT_SENTENCES):
+        sentence_bar = trange(PREVIOUS_SENTENCES, len(chapter.sentences) - NEXT_SENTENCES)
+        for i in sentence_bar:
+            sentence_bar.set_description("Sentence Index: " + str(i))
             previous_sentences = chapter.sentences[i - PREVIOUS_SENTENCES:i]
             temp = TrainingData(
                 book_title=title,
@@ -69,7 +71,7 @@ def convert_all(input_dir: str, output_dir: str):
             continue
 
         md5 = file.split("___")[0]
-        pbar.set_description(md5)
+        pbar.set_description("File: " + md5)
         input_file = os.path.join(input_dir, file)
 
         title = file.split("___")[1]
