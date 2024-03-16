@@ -76,7 +76,7 @@ def convert_all(input_dir: str, output_dir: str):
             author = file.split("___")[2]
             output_file = os.path.join(output_dir, md5 + ".jsonl.zst")
 
-            if md5 == "fabb39e33d3519a7d442d6777baba500":
+            if not os.path.exists(output_file):
                 generate_for(input_file, output_file, title)
 
 
