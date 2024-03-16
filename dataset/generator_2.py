@@ -19,11 +19,13 @@ def convert_to_trainingdata(book: Book, title: str) -> [TrainingData]:
     ret = []
     chapter_bar = tqdm(book.chapters)
     for chapter in chapter_bar:
-        chapter_bar.set_description("Chapter " + str(chapter))
+        chapter_bar.set_description("Chapter " + str(chapter.title) + " generating summary.")
 
         # create chapter summary
         chapter_text = " ".join(chapter.sentences)
         chapter_summary = summarizer.summarize_text(chapter_text, SUMMARY_LENGTH)
+
+        chapter_bar.set_description("Chapter " + str(chapter.title) + " generating sentences.")
 
         sentence_bar = trange(PREVIOUS_SENTENCES, len(chapter.sentences) - NEXT_SENTENCES)
         for i in sentence_bar:
