@@ -17,7 +17,7 @@ SUMMARY_LENGTH = 3000
 
 def convert_to_trainingdata(book: Book, title: str) -> [TrainingData]:
     ret = []
-    chapter_bar = tqdm(book.chapters)
+    chapter_bar = tqdm(book.chapters, leave=False)
     for chapter in chapter_bar:
         chapter_bar.set_description("Chapter " + str(chapter.title) + " generating summary.")
 
@@ -27,7 +27,7 @@ def convert_to_trainingdata(book: Book, title: str) -> [TrainingData]:
 
         chapter_bar.set_description("Chapter " + str(chapter.title) + " generating sentences.")
 
-        sentence_bar = trange(PREVIOUS_SENTENCES, len(chapter.sentences) - NEXT_SENTENCES)
+        sentence_bar = trange(PREVIOUS_SENTENCES, len(chapter.sentences) - NEXT_SENTENCES, leave=False)
         for i in sentence_bar:
             sentence_bar.set_description("Sentence Index: " + str(i))
             previous_sentences = chapter.sentences[i - PREVIOUS_SENTENCES:i]
@@ -57,14 +57,14 @@ def write_and_compress(training_datas: [TrainingData], outfile: str):
 
 
 def generate_for(input_file: str, output_file: str, title: str):
-    summarizer.ensure_model()
-
     book = load_book(input_file)
     tds = convert_to_trainingdata(book, title)
     write_and_compress(tds, output_file)
 
 
 def convert_all(input_dir: str, output_dir: str):
+    summarizer.ensure_model()
+
     os.makedirs(output_dir, exist_ok=True)
 
     pbar = tqdm(os.listdir(input_dir))
@@ -73,6 +73,10 @@ def convert_all(input_dir: str, output_dir: str):
             continue
 
         md5 = file.split("___")[0]
+
+        if md5 != "81b343cbd2e08c7b20a5acbe8bbf2d72":
+            continue
+
         pbar.set_description("File: " + md5)
         input_file = os.path.join(input_dir, file)
 
