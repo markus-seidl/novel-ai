@@ -22,7 +22,7 @@ def summarize_text(text, length_chars) -> str:
         if len(text) <= length_chars * 2:
             return text
 
-        print(f"Summarization is {len(text)} long instead of {length_chars}, retrying.")
+        # print(f"Summarization is {len(text)} long instead of {length_chars}, retrying.")
 
     if len(text) <= length_chars:
         print(f"Failed, including longer summary {len(text)}")
