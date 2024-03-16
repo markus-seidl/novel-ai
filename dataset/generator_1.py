@@ -1,16 +1,18 @@
 import dataclasses
 import json
 
-from entities import Book, Chapter, TrainingData
+from entities import Book, TrainingData
 from book_parser import load_book
-import llama_summarizer as summarizer
+import sumi.textsumi as summarizer
 import tqdm
 import zstandard as zstd
 
-PREVIOUS_SENTENCES = 3
-NEXT_SENTENCES = 4
+PREVIOUS_SENTENCES = 5
+NEXT_SENTENCES = 3
 
-SUMMARY_LENGTH = 3
+SUMMARY_LENGTH = 300
+SUMMARY_PREV = 20
+SUMMARY_NEXT = 20
 
 
 def convert_to_trainingdata(book: Book) -> [TrainingData]:
@@ -21,16 +23,17 @@ def convert_to_trainingdata(book: Book) -> [TrainingData]:
 
         for i in tqdm.trange(PREVIOUS_SENTENCES, len(chapter.sentences) - NEXT_SENTENCES):
             previous_sentences = chapter.sentences[i - PREVIOUS_SENTENCES:i]
-            summary_sentences = " ".join(chapter.sentences[i - PREVIOUS_SENTENCES:i + NEXT_SENTENCES])
+            summary_sentences = chapter.sentences[max(0, i - SUMMARY_PREV):min(i + SUMMARY_NEXT, len(chapter.sentences))]
+            summary_text = " ".join(summary_sentences)
 
-            summary = summarizer.summarize_text(summary_sentences, SUMMARY_LENGTH)
+            summary = summarizer.summarize_text(summary_text, SUMMARY_LENGTH)
 
             temp = TrainingData(
                 book_title=book.title,
                 chapter_title=chapter.title,
                 summary=summary,
                 previous_sentences=" ".join(previous_sentences),
-                expected_answer=" ".join(chapter.sentences[i:i + 1])
+                expected_answer=" ".join(chapter.sentences[i:i + NEXT_SENTENCES])
             )
 
             ret.append(temp)
@@ -65,6 +68,6 @@ if __name__ == '__main__':
     tds = convert_to_trainingdata(book)
 
     for td in tds:
-        print(td.previous_sentences[0:20], "... [", td.summary, "] -> ", td.expected_answer, "")
+        print(td.previous_sentences, "... [", td.summary, "] -> ", td.expected_answer, "")
 
     write_and_compress(tds, "temp.zsl")

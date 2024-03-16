@@ -5,3 +5,5 @@ torch
 gpt4all
 tqdm
 zstandard
+textsum
+unidecode

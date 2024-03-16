@@ -240,3 +240,11 @@ cython_debug/
 #.idea/
 
 temp/
+
+anna/dl
+anna/torrents
+anna/libgenrs_fiction.json
+
+anna/*.sh
+anna/*.pickle
+

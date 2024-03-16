@@ -1,7 +1,7 @@
 import re
 from nltk import sent_tokenize
 from entities import *
-from nop_summarizer import summarize_text
+from sumi.nop_summarizer import summarize_text
 
 CHAPTER_REGEX = re.compile(r'[a-zA-Z0-9 ,’\'\\*]+')
 SUMMARY_LENGTH = 0
@@ -105,10 +105,10 @@ def load_book(filename: str) -> Book:
 
 if __name__ == '__main__':
     # /Volumes/Dia/ai-data/anna-manual/
-    book_file = "aae8a9a0b14d2b900704cfc1e2ac3eb9.txt"
+    # book_file = "aae8a9a0b14d2b900704cfc1e2ac3eb9.txt"
     # book_file = "b0845a13375a4fb410e753ec526a8e3f.txt"
     # book_file = "055cc96d3c8a23505a6e6b353b773cd2.txt"
-    # book_file = "a2a8b19cdddea509540191833a1364fc.txt"
+    book_file = "a2a8b19cdddea509540191833a1364fc.txt"
     book = load_book(book_file)
 
     for chap in book.chapters:
