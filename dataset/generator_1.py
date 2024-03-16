@@ -6,7 +6,7 @@ from entities import Book, TrainingData
 from book_parser import load_book
 import sumi.textsumi as summarizer
 # import sumi.nop_summarizer as summarizer
-import tqdm
+from tqdm.auto import tqdm, trange
 import zstandard as zstd
 
 PREVIOUS_SENTENCES = 5
@@ -19,11 +19,11 @@ SUMMARY_NEXT = 20
 
 def convert_to_trainingdata(book: Book, title: str) -> [TrainingData]:
     ret = []
-    chapter_bar = tqdm.tqdm(book.chapters)
+    chapter_bar = tqdm(book.chapters)
     for chapter in chapter_bar:
         chapter_bar.set_description(chapter.title)
 
-        for i in tqdm.trange(PREVIOUS_SENTENCES, len(chapter.sentences) - NEXT_SENTENCES):
+        for i in trange(PREVIOUS_SENTENCES, len(chapter.sentences) - NEXT_SENTENCES):
             previous_sentences = chapter.sentences[i - PREVIOUS_SENTENCES:i]
             summary_sentences = chapter.sentences[
                                 max(0, i - SUMMARY_PREV):min(i + SUMMARY_NEXT, len(chapter.sentences))]
@@ -67,17 +67,21 @@ def generate_for(input_file: str, output_file: str, title: str):
 def convert_all(input_dir: str, output_dir: str):
     os.makedirs(output_dir, exist_ok=True)
 
-    for file in os.listdir(input_dir):
-        if file.endswith(".txt"):
-            md5 = file.split("___")[0]
-            input_file = os.path.join(input_dir, file)
+    pbar = tqdm(os.listdir(input_dir))
+    for file in pbar:
+        if not file.endswith(".txt"):
+            continue
 
-            title = file.split("___")[1]
-            author = file.split("___")[2]
-            output_file = os.path.join(output_dir, md5 + ".jsonl.zst")
+        md5 = file.split("___")[0]
+        pbar.set_description(md5)
+        input_file = os.path.join(input_dir, file)
 
-            if not os.path.exists(output_file):
-                generate_for(input_file, output_file, title)
+        title = file.split("___")[1]
+        author = file.split("___")[2]
+        output_file = os.path.join(output_dir, md5 + ".jsonl.zst")
+
+        if not os.path.exists(output_file):
+            generate_for(input_file, output_file, title)
 
 
 if __name__ == '__main__':

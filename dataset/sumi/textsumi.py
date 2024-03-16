@@ -18,7 +18,7 @@ def summarize_text(text, length_chars) -> str:
     SUMI.set_inference_params({"max_length": length_chars})
 
     for i in range(3):
-        text = SUMI.summarize_string(text)
+        text = SUMI.summarize_string(text, disable_progress_bar=True)
         if len(text) <= length_chars * 2:
             return text
 
