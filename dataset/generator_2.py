@@ -74,9 +74,6 @@ def convert_all(input_dir: str, output_dir: str):
 
         md5 = file.split("___")[0]
 
-        if md5 != "81b343cbd2e08c7b20a5acbe8bbf2d72":
-            continue
-
         pbar.set_description("File: " + md5)
         input_file = os.path.join(input_dir, file)
 
