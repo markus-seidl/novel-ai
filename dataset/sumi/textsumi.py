@@ -17,7 +17,7 @@ def summarize_text(text, length_chars) -> str:
 
     for i in range(3):
         text = SUMI.summarize_string(text)
-        if len(text) <= length_chars:
+        if len(text) <= length_chars * 2:
             return text
 
         print(f"Summarization is {len(text)} long instead of {length_chars}, retrying.")

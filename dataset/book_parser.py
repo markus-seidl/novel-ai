@@ -26,7 +26,7 @@ def find_corpus(text: str) -> (int):
             lines_visited += 1
             continue
 
-        if "." in line:
+        if "." in line or "\"" in line or "“" in line:
             last_line_was_sentence += 1
             lines_visited += 1
         else:
