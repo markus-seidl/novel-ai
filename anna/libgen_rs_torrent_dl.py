@@ -20,6 +20,7 @@ class Row:
     md5: str
     title: str
     author: str
+    extension: str
     torrent_file: TorrentEntry = None
 
 
@@ -60,7 +61,8 @@ def load_json(filename: str) -> [Row]:
             Row(
                 md5=str(e['MD5']).lower(),
                 title=str(e['Title']),
-                author=str(e['Author'])
+                author=str(e['Author']),
+                extension=str(e['Extension']).lower()
             )
         )
 

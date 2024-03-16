@@ -100,6 +100,14 @@ def load_book(filename: str) -> Book:
 
     file_text = simple_cleaning(file_text, start_corpus_line_no)
     book = split_into_chapters(file_text)
+
+    for chapter in book.chapters:
+        fl = chapter.sentences.copy()
+        len_before = len(fl)
+        fl = list(filter(lambda line: not re.match(r'^[\* \d]+$', line.strip()), fl))
+
+        chapter.sentences = fl
+
     return book
 
 
@@ -112,7 +120,7 @@ if __name__ == '__main__':
     book = load_book(book_file)
 
     for chap in book.chapters:
-        print(chap.title, len(chap.sentences))
+        print(chap.title, " ".join(chap.sentences))
     # sentences =
     # print(sentences[0:100])
     # print(start_corpus_line_no)
