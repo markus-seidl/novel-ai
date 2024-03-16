@@ -9,6 +9,8 @@ def ensure_model():
     if SUMI is None:
         SUMI = Summarizer()
 
+        print(f"Initialized textsum with: {SUMI.device}")
+
 
 def summarize_text(text, length_chars) -> str:
     ensure_model()
