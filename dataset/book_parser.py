@@ -111,6 +111,22 @@ def load_book(filename: str) -> Book:
     return book
 
 
+def load_book_from_text(file_text: str) -> Book:
+    start_corpus_line_no = find_corpus(file_text)
+
+    file_text = simple_cleaning(file_text, start_corpus_line_no)
+    book = split_into_chapters(file_text)
+
+    for chapter in book.chapters:
+        fl = chapter.sentences.copy()
+        len_before = len(fl)
+        fl = list(filter(lambda line: not re.match(r'^[\* \d]+$', line.strip()), fl))
+
+        chapter.sentences = fl
+
+    return book
+
+
 if __name__ == '__main__':
     # /Volumes/Dia/ai-data/anna-manual/
     # book_file = "aae8a9a0b14d2b900704cfc1e2ac3eb9.txt"

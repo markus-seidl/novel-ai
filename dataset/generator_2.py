@@ -44,7 +44,7 @@ def convert_to_trainingdata(book: Book, title: str) -> [TrainingData]:
 
 
 def write_and_compress(training_datas: [TrainingData], outfile: str):
-    json_data = "\n".join(json.dumps(dataclasses.asdict(dc)) for dc in training_datas).encode("utf-8")
+    json_data = "\n".join(json.dumps(dataclasses.asdict(dc)) for dc in training_datas)
 
     cctx = zstd.ZstdCompressor()
     if True:

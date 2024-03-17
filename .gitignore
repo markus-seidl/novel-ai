@@ -249,4 +249,6 @@ anna/*.sh
 anna/*.pickle
 anna/converted
 train_data/
+enc_inputdata
+dedup_inputdata
 
