@@ -247,4 +247,6 @@ anna/libgenrs_fiction.json
 
 anna/*.sh
 anna/*.pickle
+anna/converted
+train_data/
 
