@@ -1,6 +1,7 @@
 import dataclasses
 import json
 import os
+import random
 
 import zstandard
 
@@ -107,14 +108,14 @@ def convert_all(input_dir: str, output_dir: str):
     for t in precompiled_summaries.keys():
         known_summary_files[t[0]] = True
 
-    pbar = tqdm(os.listdir(input_dir))
+    files_to_do = os.listdir(input_dir)
+    random.shuffle(files_to_do)
+    pbar = tqdm(files_to_do)
     for file in pbar:
         if not file.endswith(".txt.zst.enc"):
             continue
 
         md5 = file.split("___")[0]
-        if md5 not in known_summary_files:
-            continue
 
         pbar.set_description("File: " + md5)
         input_file = os.path.join(input_dir, file)

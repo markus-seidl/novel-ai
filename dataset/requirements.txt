@@ -7,4 +7,5 @@ tqdm
 zstandard
 textsum
 unidecode
-pycryptodome
+# pycryptodome
+pycryptodomex
