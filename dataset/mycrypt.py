@@ -21,15 +21,32 @@ def decompress_and_decrypt(encrypted_data: bytes) -> bytes:
     return z.decompress(decrypted_data)
 
 
+def load_file(file: str) -> bytes:
+    with open(file, 'rb') as f:
+        data = f.read()
+        return decompress_and_decrypt(data)
+
+
 def load_file_txt(file: str) -> str:
     with open(file, 'rb') as f:
         data = f.read()
         return decompress_and_decrypt(data).decode("utf-8")
 
 
+def save_file(data: bytes, outfile: str, overwrite_existing_file=False) -> bool:
+    outfile = ensure_zstd_enc_ext(outfile)
+    if os.path.exists(outfile) and not overwrite_existing_file:
+        return False
+
+    with open(outfile, 'wb') as f:
+        encrypted_data = compress_and_encrypt(data)
+        f.write(encrypted_data)
+        return True
+
+
 def save_file_txt(data: str, outfile: str, overwrite_existing_file=False) -> bool:
     outfile = ensure_zstd_enc_ext(outfile)
-    if os.path.exists(outfile):
+    if os.path.exists(outfile) and not overwrite_existing_file:
         return False
 
     with open(outfile, 'wb') as f:

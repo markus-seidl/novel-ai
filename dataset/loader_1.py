@@ -1,7 +1,7 @@
 import os
-import zstandard
 import json
 from tqdm.auto import tqdm
+import mycrypt
 
 
 def load_dataset(directory):
@@ -10,20 +10,17 @@ def load_dataset(directory):
     pbar = tqdm(os.listdir(directory))
     for filename in pbar:
         pbar.set_description(filename)
-        if filename.endswith(".jsonl.zst"):
-            with open(os.path.join(directory, filename), 'rb') as fh:
-                dctx = zstandard.ZstdDecompressor()
-                reader = dctx.stream_reader(fh)
-                decompressed_string = reader.read().decode('utf-8')
-                json_lines = decompressed_string.strip().split("\n")
+        if filename.endswith(".json.zst.enc"):
+            in_file = os.path.join(directory, filename)
+            json_lines = mycrypt.load_file_txt(in_file).split("\n")
 
-                for json_line in json_lines:
-                    data = json.loads(json_line)
-                    all_data.append({
-                        "instruction": data['summary'],
-                        "input": data['previous_sentences'],
-                        "output": data['expected_answer'],
-                    })
+            for json_line in json_lines:
+                data = json.loads(json_line)
+                all_data.append({
+                    "instruction": data['summary'],
+                    "input": data['previous_sentences'],
+                    "output": data['expected_answer'],
+                })
 
     return all_data
 
@@ -31,14 +28,7 @@ def load_dataset(directory):
 def write_and_compress(training_datas: [], outfile: str):
     json_data = "\n".join(json.dumps(t) for t in training_datas).encode("utf-8")
 
-    cctx = zstandard.ZstdCompressor()
-    if True:
-        compressed_data = cctx.compress(json_data)
-    else:
-        compressed_data = json_data
-
-    with open(outfile, 'wb') as file:
-        file.write(compressed_data)
+    mycrypt.save_file(json_data, outfile)
 
 
 if __name__ == '__main__':
@@ -47,4 +37,4 @@ if __name__ == '__main__':
 
     print(dataset[0])
 
-    write_and_compress(dataset, "compressed_data.jsonl.zst")
+    write_and_compress(dataset, "compressed_data.json")
