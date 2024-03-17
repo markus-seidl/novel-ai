@@ -19,9 +19,26 @@ def load_dataset(directory):
 
                 for json_line in json_lines:
                     data = json.loads(json_line)
-                    all_data.append(data)
+                    all_data.append({
+                        "instruction": data['summary'],
+                        "input": data['previous_sentences'],
+                        "output": data['expected_answer'],
+                    })
 
     return all_data
+
+
+def write_and_compress(training_datas: [], outfile: str):
+    json_data = "\n".join(json.dumps(t) for t in training_datas).encode("utf-8")
+
+    cctx = zstandard.ZstdCompressor()
+    if True:
+        compressed_data = cctx.compress(json_data)
+    else:
+        compressed_data = json_data
+
+    with open(outfile, 'wb') as file:
+        file.write(compressed_data)
 
 
 if __name__ == '__main__':
@@ -29,3 +46,5 @@ if __name__ == '__main__':
     print(len(dataset))
 
     print(dataset[0])
+
+    write_and_compress(dataset, "compressed_data.jsonl.zst")
