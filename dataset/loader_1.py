@@ -1,5 +1,7 @@
 import os
 import json
+
+import zstandard
 from tqdm.auto import tqdm
 import mycrypt
 
@@ -28,7 +30,14 @@ def load_dataset(directory):
 def write_and_compress(training_datas: [], outfile: str):
     json_data = "\n".join(json.dumps(t) for t in training_datas).encode("utf-8")
 
-    mycrypt.save_file(json_data, outfile)
+    cctx = zstandard.ZstdCompressor()
+    if True:
+        compressed_data = cctx.compress(json_data)
+    else:
+        compressed_data = json_data
+
+    with open(outfile, 'wb') as file:
+        file.write(compressed_data)
 
 
 if __name__ == '__main__':
@@ -37,4 +46,4 @@ if __name__ == '__main__':
 
     print(dataset[0])
 
-    write_and_compress(dataset, "compressed_data.json")
+    write_and_compress(dataset, "compressed_data.json.zst")
