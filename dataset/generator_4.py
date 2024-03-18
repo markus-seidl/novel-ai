@@ -187,7 +187,7 @@ def convert_all(temp_dir: str):
             SERVER_OUTPUT_PATH + md5 + ".json.zst.enc",
             output_file + ".zst.enc"
         )
-        os.remove(temp_dir + file)
+        os.remove(input_file)
         os.remove(output_file + ".zst.enc")
 
     if os.path.exists(ALIVE_FILE):
