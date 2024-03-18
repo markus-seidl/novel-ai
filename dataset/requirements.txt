@@ -9,3 +9,4 @@ textsum
 unidecode
 # pycryptodome
 pycryptodomex
+webdavclient3

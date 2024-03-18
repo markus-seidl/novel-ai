@@ -4,3 +4,7 @@ def ensure_model():
 
 def summarize_text(text, length):
     return None
+
+
+def performance_info():
+    return ""
