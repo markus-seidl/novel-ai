@@ -14,7 +14,7 @@ PERFORMANCE = {
 
 def performance_info() -> str:
     chars_per_second = PERFORMANCE["total_time"] / PERFORMANCE["processed_chars"]
-    return f"{chars_per_second} chars/s"
+    return f"{chars_per_second} s/char"
 
 
 def ensure_model():
