@@ -43,10 +43,12 @@ def summarize_text(text, length_chars) -> str:
         pbar.update(len_before)
 
         if len(text) <= length_chars * 2 or length_chars < 0:
+            pbar.close()
             return text
 
         pbar.total += len(text)
 
+    pbar.close()
     return text
 
 
