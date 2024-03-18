@@ -188,6 +188,7 @@ def convert_all(temp_dir: str):
             output_file + ".zst.enc"
         )
         os.remove(temp_dir + file)
+        os.remove(output_file + ".zst.enc")
 
     if os.path.exists(ALIVE_FILE):
         os.remove(ALIVE_FILE)
