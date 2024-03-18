@@ -1,8 +1,20 @@
+import time
+
 from textsum.summarize import Summarizer
 from nltk import sent_tokenize
 from tqdm.auto import tqdm, trange
 
 SUMI: Summarizer = None
+
+PERFORMANCE = {
+    "processed_chars": 0,
+    "total_time": 0  # seconds
+}
+
+
+def performance_info() -> str:
+    chars_per_second = PERFORMANCE["total_time"] / PERFORMANCE["processed_chars"]
+    return f"{chars_per_second} chars/s"
 
 
 def ensure_model():
@@ -18,13 +30,22 @@ def summarize_text(text, length_chars) -> str:
 
     SUMI.set_inference_params({"max_length": length_chars})
 
-    # length_it = trange(3, leave=False)
-    # length_it.set_description("My Summaries ")
+    pbar = tqdm(total=len(text), leave=False)
+    pbar.set_description("Summarization")
     for i in range(3):
+        len_before = len(text)
+        PERFORMANCE['processed_chars'] += len_before
+
+        start_time = time.time()
         text = SUMI.summarize_string(text, disable_progress_bar=True)
-        # length_it.set_description("My Summaries (" + str(len(text)) + ")")
+        PERFORMANCE['total_time'] += (time.time() - start_time)
+
+        pbar.update(len_before)
+
         if len(text) <= length_chars * 2 or length_chars < 0:
             return text
+
+        pbar.total += len(text)
 
     return text
 

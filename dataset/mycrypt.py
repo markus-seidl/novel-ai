@@ -72,8 +72,4 @@ def ensure_zstd_enc_ext(file_path):
 
 
 if __name__ == "__main__":
-    enc = compress_and_encrypt("hello world".encode("utf-8"))
-    print(enc)
-    text = decompress_and_decrypt(enc)
-
-    print(text.decode("utf-8"))
+    print(load_file_txt("01e8a35ae5b70907a5ddddcdc5696d32.json.zst.enc"))

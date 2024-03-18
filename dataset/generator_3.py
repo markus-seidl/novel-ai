@@ -1,4 +1,5 @@
 import dataclasses
+import datetime
 import json
 import os
 import random
@@ -23,12 +24,23 @@ WINDOW_STEP_SIZE = 3
 SUMMARY_LENGTH = 3000
 
 
+def inform_alive(current_md5):
+    with open(f"im_alive_{os.getpid()}.txt", "w+") as f:
+        f.write(
+            datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S") + " " +
+            summarizer.performance_info() + " " +
+            current_md5
+        )
+
+
 # precompiled_summaries : ("md5", "chapter title") : "summary"
-def convert_to_trainingdata(book: Book, title: str, precompiled_summaries: {(str, str): str}, md5: str) -> [TrainingData]:
+def convert_to_trainingdata(
+        book: Book, title: str, precompiled_summaries: {(str, str): str}, md5: str
+) -> [TrainingData]:
     ret = []
     chapter_bar = tqdm(book.chapters, leave=False)
     for chapter in chapter_bar:
-        chapter_bar.set_description("Chapter " + str(chapter.title) + " generating summary.")
+        chapter_bar.set_description("Chapter " + str(chapter.title))
 
         # create chapter summary
         hash = (md5, chapter.title)
@@ -38,7 +50,8 @@ def convert_to_trainingdata(book: Book, title: str, precompiled_summaries: {(str
             chapter_text = " ".join(chapter.sentences)
             chapter_summary = summarizer.summarize_text(chapter_text, SUMMARY_LENGTH)
 
-            chapter_bar.set_description("Chapter " + str(chapter.title) + " generating sentences.")
+        chapter_bar.set_description("Chapter " + str(chapter.title) + f" ({summarizer.performance_info()})")
+        inform_alive(md5)
 
         sentence_bar = trange(
             PREVIOUS_SENTENCES, len(chapter.sentences) - NEXT_SENTENCES, WINDOW_STEP_SIZE, leave=False
@@ -128,7 +141,7 @@ def convert_all(input_dir: str, output_dir: str):
             generate_for(input_file, output_file, title, precompiled_summaries, md5)
 
 
-def load_old_summaries(output_dir) -> {(str, str) : str}:
+def load_old_summaries(output_dir) -> {(str, str): str}:
     precompiled_summaries: {(str, str): str} = {}
     pbar = tqdm(os.listdir(output_dir))
     for file in pbar:
