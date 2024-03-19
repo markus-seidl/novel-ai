@@ -55,7 +55,8 @@ def inform_alive(current_md5):
         f.write(
             datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S") + " " +
             summarizer.performance_info() + " " +
-            current_md5 + "\n"
+            current_md5 +
+            str(os.environ.get("VAST_CONTAINERLABEL")) + "\n"
         )
     WEBDAV_CLIENT.upload_file(ALIVE_FILE, ALIVE_FILE)
 

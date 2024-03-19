@@ -72,4 +72,4 @@ def ensure_zstd_enc_ext(file_path):
 
 
 if __name__ == "__main__":
-    print(load_file_txt("01e8a35ae5b70907a5ddddcdc5696d32.json.zst.enc"))
+    print(load_file_txt("../train_data/294b6512b7bdb24412eba75bdf6398c1.json.zst.enc"))
