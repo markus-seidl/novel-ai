@@ -9,11 +9,18 @@ import zstandard
 
 from entities import Book, TrainingData
 from book_parser import load_book_from_text
-import sumi.textsumi as summarizer
-# import sumi.nop_summarizer as summarizer
+
 from tqdm.auto import tqdm, trange
 import mycrypt
 from webdav3.client import Client, RemoteResourceNotFound
+
+SUMMARIZER = os.environ.get('SUMMARIZER') or "TEXTSUM"
+if SUMMARIZER == "TEXTSUM":
+    import sumi.textsumi as summarizer
+elif SUMMARIZER == "NOP":
+    import sumi.nop_summarizer as summarizer
+elif SUMMARIZER == "SBERT":
+    import sumi.sbert_summarizer as summarizer
 
 WEBDAV_CLIENT = Client({
     'webdav_hostname': os.environ.get('WEBDAV_HOSTNAME'),
@@ -22,6 +29,8 @@ WEBDAV_CLIENT = Client({
     'disable_check': True
 })
 print("Connected to webdav, root contents: ", WEBDAV_CLIENT.list("/"))
+
+CONTAINER_LABEL = os.environ.get("VAST_CONTAINERLABEL") or "UNKNOWN"
 
 PREVIOUS_SENTENCES = 5
 MIN_PREV_LENGTH = 100
@@ -38,7 +47,7 @@ def get_local_ip():
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     try:
         # Doesn't even have to be reachable
-        s.connect(('bearo.de', 1))
+        s.connect(('google.de', 1))
         ip = str(s.getsockname()[0]).replace(".", "_")
     except Exception:
         ip = 'localhost'
@@ -47,7 +56,7 @@ def get_local_ip():
     return ip
 
 
-ALIVE_FILE = f"im_alive_{os.getpid()}_{get_local_ip()}.txt"
+ALIVE_FILE = f"im_alive_{os.getpid()}_{CONTAINER_LABEL}.txt"
 
 
 def inform_alive(current_md5):
@@ -55,8 +64,9 @@ def inform_alive(current_md5):
         f.write(
             datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S") + " " +
             summarizer.performance_info() + " " +
-            current_md5 +
-            str(os.environ.get("VAST_CONTAINERLABEL")) + "\n"
+            current_md5 + " " +
+            SUMMARIZER + " " +
+            CONTAINER_LABEL + "\n"
         )
     WEBDAV_CLIENT.upload_file(ALIVE_FILE, ALIVE_FILE)
 
@@ -107,19 +117,22 @@ def convert_to_trainingdata(
                 chapter_title=chapter.title,
                 summary=chapter_summary,
                 previous_sentences=previous_sentences_text,
-                expected_answer=next_sentences_text
+                expected_answer=next_sentences_text,
+                sum_type=SUMMARIZER
             )
             ret.append(temp)
 
             # Without Input Text
-            temp = TrainingData(
-                book_title=title,
-                chapter_title=chapter.title,
-                summary=chapter_summary,
-                previous_sentences="",
-                expected_answer=next_sentences_text
-            )
-            ret.append(temp)
+            if SUMMARIZER == "TEXTSUM":
+                temp = TrainingData(
+                    book_title=title,
+                    chapter_title=chapter.title,
+                    summary=chapter_summary,
+                    previous_sentences="",
+                    expected_answer=next_sentences_text,
+                    sum_type=SUMMARIZER
+                )
+                ret.append(temp)
 
     return ret
 
@@ -180,7 +193,7 @@ def convert_all(temp_dir: str):
         pbar.set_description(f"Processing: {md5}")
 
         input_file = os.path.join(temp_dir, file)
-        output_file = os.path.join(temp_dir, md5 + ".json")
+        output_file = os.path.join(temp_dir, md5 + "___" + SUMMARIZER.lower() + ".json")
 
         generate_for(input_file, output_file, title, {}, md5)
         pbar.set_description(f"Uploading: {md5}")

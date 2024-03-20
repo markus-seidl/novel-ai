@@ -22,3 +22,4 @@ class TrainingData:
     summary: str
     previous_sentences: str
     expected_answer: str
+    sum_type: str = "TEXTSUM"

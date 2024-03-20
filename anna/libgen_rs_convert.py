@@ -37,7 +37,11 @@ def clean_string(txt: str) -> str:
     return ret
 
 
+MISSED_ARCHIVES = 0
+
+
 def convert_all(rows: [Row], book_files: [(str, str)], enc_output_directory: str):
+    global MISSED_ARCHIVES
     rows_dict: {str: Row} = {}
     for row in rows:
         rows_dict[row.md5] = row
@@ -55,7 +59,8 @@ def convert_all(rows: [Row], book_files: [(str, str)], enc_output_directory: str
         if row.extension in ["pdf", "cbr"]:  # we do not OCR
             continue
 
-        if row.extension in ["zip"]:  # TODO ZIP files need extraction before conversion!
+        if row.extension in ["zip", "rar"]:  # TODO ZIP files need extraction before conversion!
+            MISSED_ARCHIVES += 1
             continue
 
         pbar.set_description(f"{md5[0]}")
@@ -89,11 +94,14 @@ if __name__ == "__main__":
     enc_output_directory = "../enc_inputdata/"
     # convert_all(rows, book_files, enc_output_directory)
 
-    num_chunks = multiprocessing.cpu_count()
-    book_files_chunks = list(to_chunks(book_files, num_chunks))
+    # num_chunks = multiprocessing.cpu_count()
+    # book_files_chunks = list(to_chunks(book_files, num_chunks))
 
     partial_func = partial(worker, rows, enc_output_directory)
 
-    with multiprocessing.Pool() as pool:
-        # Process each chunk concurrently
-        pool.map(partial_func, book_files_chunks)
+    # with multiprocessing.Pool() as pool:
+    #     # Process each chunk concurrently
+    #     pool.map(partial_func, book_files_chunks)
+    partial_func(book_files)
+
+    print(MISSED_ARCHIVES)

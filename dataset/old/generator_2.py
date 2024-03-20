@@ -12,29 +12,29 @@ import zstandard as zstd
 PREVIOUS_SENTENCES = 5
 NEXT_SENTENCES = 3
 
-SUMMARY_LENGTH = 300
-SUMMARY_PREV = 20
-SUMMARY_NEXT = 20
+SUMMARY_LENGTH = 3000
 
 
 def convert_to_trainingdata(book: Book, title: str) -> [TrainingData]:
     ret = []
-    chapter_bar = tqdm(book.chapters)
+    chapter_bar = tqdm(book.chapters, leave=False)
     for chapter in chapter_bar:
-        chapter_bar.set_description(chapter.title)
+        chapter_bar.set_description("Chapter " + str(chapter.title) + " generating summary.")
 
-        for i in trange(PREVIOUS_SENTENCES, len(chapter.sentences) - NEXT_SENTENCES):
+        # create chapter summary
+        chapter_text = " ".join(chapter.sentences)
+        chapter_summary = summarizer.summarize_text(chapter_text, SUMMARY_LENGTH)
+
+        chapter_bar.set_description("Chapter " + str(chapter.title) + " generating sentences.")
+
+        sentence_bar = trange(PREVIOUS_SENTENCES, len(chapter.sentences) - NEXT_SENTENCES, leave=False)
+        for i in sentence_bar:
+            sentence_bar.set_description("Sentence Index: " + str(i))
             previous_sentences = chapter.sentences[i - PREVIOUS_SENTENCES:i]
-            summary_sentences = chapter.sentences[
-                                max(0, i - SUMMARY_PREV):min(i + SUMMARY_NEXT, len(chapter.sentences))]
-            summary_text = " ".join(summary_sentences)
-
-            summary = summarizer.summarize_text(summary_text, SUMMARY_LENGTH)
-
             temp = TrainingData(
                 book_title=title,
                 chapter_title=chapter.title,
-                summary=summary,
+                summary=chapter_summary,
                 previous_sentences=" ".join(previous_sentences),
                 expected_answer=" ".join(chapter.sentences[i:i + NEXT_SENTENCES])
             )
@@ -44,7 +44,7 @@ def convert_to_trainingdata(book: Book, title: str) -> [TrainingData]:
 
 
 def write_and_compress(training_datas: [TrainingData], outfile: str):
-    json_data = "\n".join(json.dumps(dataclasses.asdict(dc)) for dc in training_datas).encode("utf-8")
+    json_data = "\n".join(json.dumps(dataclasses.asdict(dc)) for dc in training_datas)
 
     cctx = zstd.ZstdCompressor()
     if True:
@@ -57,14 +57,14 @@ def write_and_compress(training_datas: [TrainingData], outfile: str):
 
 
 def generate_for(input_file: str, output_file: str, title: str):
-    summarizer.ensure_model()
-
     book = load_book(input_file)
     tds = convert_to_trainingdata(book, title)
     write_and_compress(tds, output_file)
 
 
 def convert_all(input_dir: str, output_dir: str):
+    summarizer.ensure_model()
+
     os.makedirs(output_dir, exist_ok=True)
 
     pbar = tqdm(os.listdir(input_dir))
@@ -73,7 +73,8 @@ def convert_all(input_dir: str, output_dir: str):
             continue
 
         md5 = file.split("___")[0]
-        pbar.set_description(md5)
+
+        pbar.set_description("File: " + md5)
         input_file = os.path.join(input_dir, file)
 
         title = file.split("___")[1]
@@ -85,4 +86,4 @@ def convert_all(input_dir: str, output_dir: str):
 
 
 if __name__ == '__main__':
-    convert_all("../anna/converted/", "../train_data/")
+    convert_all("../../anna/converted/", "../train_data/")
