@@ -72,6 +72,7 @@ def ensure_model():
     #     verbose=False
     # )
 
+    print("Loading or downloading model...")
     model_path = hf_hub_download(repo_id=MODEL_ID, filename=MODEL_FILENAME, cache_dir=MODEL_PATH)
 
     n_gpu_layers = -1  # The number of layers to put on the GPU. The rest will be on the CPU. If you don't know how many layers there are, you can use -1 to move all to GPU.
@@ -84,7 +85,7 @@ def ensure_model():
         "n_ctx": MAX_CTX_SIZE,
         "n_gpu_layers": n_gpu_layers,
         "n_batch": n_batch,
-        "f16_kv": True,  # MUST set to True, otherwise you will run into problem after a couple of calls
+        # "f16_kv": True,  # MUST set to True, otherwise you will run into problem after a couple of calls
         "verbose": "true" == os.getenv("LLAMACPP_VERBOSE") or False,
     }
     LLM = LlamaCpp(**kwargs)
