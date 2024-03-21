@@ -83,7 +83,7 @@ def convert_to_trainingdata(
 
             chunk_sentences = sent_tokenize(chunk)
 
-            for i in range(len(chunk_sentences)):
+            for i in range(0, len(chunk_sentences), WINDOW_STEP_SIZE):
                 # Fill until MIN_PREV_LENGTH is reached
                 previous_sentences_text = ""
                 prev_idx = i - PREVIOUS_SENTENCES

@@ -129,16 +129,17 @@ def summarize_text_v2(text, length):
 
 
 if __name__ == "__main__":
-    import sys
-
-    sys.path.insert(1, '../')
-    import mycrypt
-
-    text = mycrypt.load_file_txt(
-        "....txt.zst.enc"
-    )
-
-    chunks = split_into_chunks(text)
-    result = summarize_text(chunks[0])
-    print(result)
-    print(len(result), " vs ", len(chunks[0]))
+    ensure_model()
+    # import sys
+    #
+    # sys.path.insert(1, '../')
+    # import mycrypt
+    #
+    # text = mycrypt.load_file_txt(
+    #     "....txt.zst.enc"
+    # )
+    #
+    # chunks = split_into_chunks(text)
+    # result = summarize_text(chunks[0])
+    # print(result)
+    # print(len(result), " vs ", len(chunks[0]))
