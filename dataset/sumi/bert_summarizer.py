@@ -18,7 +18,7 @@ def summarize_text(text, length) -> str:
 
 
 if __name__ == '__main__':
-    with open("../../anna/converted/0a0bf519400a1cc245a4fcbbe6bdd585___Cuckolded___Selvaggio_Tinto.txt", "r") as f:
+    with open("", "r") as f:
         text = f.read()
 
     summary = summarize_text(text, 500)

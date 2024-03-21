@@ -59,14 +59,8 @@ if __name__ == '__main__':
     # book_file = "055cc96d3c8a23505a6e6b353b773cd2.txt"
     # book_file = "a2a8b19cdddea509540191833a1364fc.txt"
 
-    text = ("As I walked into the kitchen that morning, I had the strange feeling that something was going to happen. "
-            "Maybe it had already happened and I just didn’t know it. I saw my wife standing there with a smirk on her "
-            "beautiful face. When I saw her in the black negligee, I felt my downstairs begin to stir underneath my "
-            " light"
-            " cotton robe. \"Good Morning, darling. I’m excited to open my birthday gift.\" Still smiling, she "
-            "seductively licked a drop of hot butter from her finger and said, \"It’d better be good.\" \"Uh-oh.\" "
-            "I’d totally forgotten about it, and I realized she knew it. Stalling, I stole a slice of bacon from her "
-            "plate, stuffed it in my mouth, mumbling incoherently around it.")
+    with open("", "r") as f:
+        text = f.read()
 
-    summary = summarize_text(text, 200)
+    summary = summarize_text(text, 3000)
     print(summary)

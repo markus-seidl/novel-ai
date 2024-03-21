@@ -60,6 +60,7 @@ def simple_cleaning(text: str, start_corpus_line_no: int) -> str:
 
 def is_chapter(line: str) -> bool:
     return (str(line).count(" ") < 10
+            and len(line) < 40
             and CHAPTER_REGEX.fullmatch(line)
             and line.lower() != "the end"
             and not line.startswith("By"))
@@ -132,8 +133,9 @@ if __name__ == '__main__':
     # book_file = "aae8a9a0b14d2b900704cfc1e2ac3eb9.txt"
     # book_file = "b0845a13375a4fb410e753ec526a8e3f.txt"
     # book_file = "055cc96d3c8a23505a6e6b353b773cd2.txt"
-    book_file = "a2a8b19cdddea509540191833a1364fc.txt"
-    book = load_book(book_file)
+    import mycrypt
+    text = mycrypt.load_file_txt("")
+    book = load_book_from_text(text)
 
     for chap in book.chapters:
         print(chap.title, " ".join(chap.sentences))
