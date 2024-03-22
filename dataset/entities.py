@@ -28,11 +28,12 @@ class TrainingData:
 @dataclass
 class SummaryChunk:
     summary: str
-    chunk: List[str]
+    sentences: List[str]
 
 
 @dataclass
 class SummaryChapter:
+    title: str
     chunks: List[SummaryChunk]
 
 

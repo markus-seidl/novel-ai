@@ -71,7 +71,7 @@ def convert_to_summary_book(
 
         inform_alive(file_id)
 
-        summary_chapter = SummaryChapter([])
+        summary_chapter = SummaryChapter(chapter.title, [])
         summary_book.chapters.append(summary_chapter)
         for chunk in tqdm(chunks):
             chunk_summary = summarizer.summarize_text(chunk)
