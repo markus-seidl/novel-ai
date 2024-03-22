@@ -74,6 +74,7 @@ def ensure_model():
 
     print("Loading or downloading model...")
     model_path = hf_hub_download(repo_id=MODEL_ID, filename=MODEL_FILENAME, cache_dir=MODEL_PATH)
+    print("Initializing model...")
 
     n_gpu_layers = -1  # The number of layers to put on the GPU. The rest will be on the CPU. If you don't know how many layers there are, you can use -1 to move all to GPU.
     n_batch = 512  # Should be between 1 and n_ctx, consider the amount of RAM of your Apple Silicon Chip.
@@ -118,14 +119,6 @@ def summarize_text(chunk):
 
     # clean output a bit
     return " ".join(summary_sentences)
-
-
-def summarize_text_v2(text, length):
-    ensure_model()
-    doc = Document(page_content=text)
-    chain = load_summarize_chain(LLM, chain_type="map_reduce")
-
-    return chain.run([doc])
 
 
 if __name__ == "__main__":

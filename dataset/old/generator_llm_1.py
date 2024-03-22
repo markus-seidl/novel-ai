@@ -183,4 +183,4 @@ def convert_all(temp_dir: str):
 
 
 if __name__ == '__main__':
-    convert_all("../temp/")
+    convert_all("../../temp/")

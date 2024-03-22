@@ -233,4 +233,4 @@ def load_old_summaries(output_dir) -> {(str, str): str}:
 
 
 if __name__ == '__main__':
-    convert_all("../temp/")
+    convert_all("../../temp/")

@@ -23,3 +23,21 @@ class TrainingData:
     previous_sentences: str
     expected_answer: str
     sum_type: str = "TEXTSUM"
+
+
+@dataclass
+class SummaryChunk:
+    summary: str
+    chunk: List[str]
+
+
+@dataclass
+class SummaryChapter:
+    chunks: List[SummaryChunk]
+
+
+@dataclass
+class SummaryBook:
+    title: str
+    file_id: str
+    chapters: List[SummaryChapter]
