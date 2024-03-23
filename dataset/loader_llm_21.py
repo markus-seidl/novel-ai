@@ -99,13 +99,13 @@ def transform_input_data(local_folder: str) -> [{str, str}]:
     return ret
 
 
-def load_novel_dataset(local_temp, formatting_prompts_func, test_data_size_percent=0.15):
+def load_novel_dataset(local_temp, formatting_prompts_func, test_data_size_percent=0.15, num_proc=1):
     os.makedirs(local_temp, exist_ok=True)
     download_input_data('/output_llm_dataset/', local_temp)
     data = transform_input_data(local_temp)
     print("Generated ", len(data))
     ds = Dataset.from_list(data)
-    ds = ds.map(formatting_prompts_func, batched=True, num_proc=4)
+    ds = ds.map(formatting_prompts_func, batched=True, num_proc=num_proc)
     ds = ds.train_test_split(test_size=test_data_size_percent, shuffle=True, seed=0xAFFE)
     print("Train size: ", len(ds['train']), "Test size: ", len(ds['test']))
 
