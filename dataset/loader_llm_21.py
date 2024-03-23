@@ -108,7 +108,7 @@ def load_novel_dataset(local_temp, formatting_prompts_func, test_data_size_perce
     ds = ds.map(formatting_prompts_func, batched=True, num_proc=num_proc)
     ds = ds.train_test_split(test_size=test_data_size_percent, shuffle=True, seed=0xAFFE)
     print("Train size: ", len(ds['train']), "Test size: ", len(ds['test']))
-    return dataset
+    return ds
 
 
 if __name__ == '__main__':
