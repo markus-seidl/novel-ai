@@ -1,11 +1,11 @@
-import dataclasses
 import json
 import os
-from datasets import load_dataset
 from webdav3.client import Client
 from tqdm.auto import tqdm
 import mycrypt
 from entities import Book, SummaryBook, SummaryChunk, SummaryChapter
+import multiprocessing
+from datasets import Dataset
 
 
 def download_input_data(webdav_folder: str, local_folder: str) -> [str]:
@@ -42,7 +42,7 @@ def transform_book(
             ret.append({
                 "instruction": chunk.summary,
                 "input": "",
-                "output": sentences[0:cnt_next_sentences],
+                "output": " ".join(sentences[0:cnt_next_sentences]),
             })
 
             for idx in range(cnt_previous_sentences, len(sentences), window_step_size):
@@ -99,12 +99,42 @@ def transform_input_data(local_folder: str) -> [{str, str}]:
     return ret
 
 
-if __name__ == '__main__':
-    local_temp = "../temp/data/"
-
+def load_novel_dataset(local_temp, formatting_prompts_func, test_data_size_percent=0.15):
     os.makedirs(local_temp, exist_ok=True)
-
     download_input_data('/output_llm_dataset/', local_temp)
-
     data = transform_input_data(local_temp)
     print("Generated ", len(data))
+    ds = Dataset.from_list(data)
+    ds = ds.map(formatting_prompts_func, batched=True, num_proc=4)
+    ds = ds.train_test_split(test_size=test_data_size_percent, shuffle=True, seed=0xAFFE)
+    print("Train size: ", len(ds['train']), "Test size: ", len(ds['test']))
+
+
+if __name__ == '__main__':
+    local_temp = "../temp/data/"
+    my_prompt = """Below is an instruction that describes a task, paired with an input that provides further context. Write a response that appropriately completes the request.
+
+    ### Instruction:
+    Continue the novel given at the input, write in third person and use direct speech. The synopsis is as follows: {}
+
+    ### Input:
+    {}
+
+    ### Response:
+    {}"""
+    EOS_TOKEN = "TODO"
+
+
+    def formatting_prompts_func(examples):
+        instructions = examples["instruction"]
+        inputs = examples["input"]
+        outputs = examples["output"]
+        texts = []
+        for instruction, input, output in zip(instructions, inputs, outputs):
+            # Must add EOS_TOKEN, otherwise your generation will go on forever!
+            text = my_prompt.format(instruction, input, output) + EOS_TOKEN
+            texts.append(text)
+        return {"text": texts, }
+
+
+    ds = load_novel_dataset(local_temp, formatting_prompts_func)
