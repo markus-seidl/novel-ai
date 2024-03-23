@@ -65,7 +65,7 @@ def convert_to_summary_book(
     summary_book = SummaryBook(title=title, file_id=file_id, chapters=[])
     chapter_bar = tqdm(book.chapters, leave=False)
     for chapter in chapter_bar:
-        chapter_bar.set_description("Chapter " + str(chapter.title))
+        chapter_bar.set_description("Chapter " + str(chapter.title) + f" {summarizer.performance_info()}")
 
         chunks = summarizer.split_into_chunks(" ".join(chapter.sentences))
 
