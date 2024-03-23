@@ -17,3 +17,7 @@ huggingface_hub
 llama-cpp-python
 # See https://github.com/abetlen/llama-cpp-python/issues/1285#issuecomment-2006153790 :
 # force build for metal: CMAKE_ARGS="-DLLAMA_METAL_EMBED_LIBRARY=ON -DLLAMA_METAL=on" pip install -U llama-cpp-python --no-cache-dir
+
+
+# loader_llm_21
+datasets

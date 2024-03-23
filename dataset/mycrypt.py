@@ -72,4 +72,4 @@ def ensure_zstd_enc_ext(file_path):
 
 
 if __name__ == "__main__":
-    print(load_file_txt("/Users/augunrik/workspaces/novel-ai/1194feed5fa95cfeb7c689b7d65e7361.json.zst.enc"))
+    print(load_file_txt("/Users/augunrik/workspaces/novel-ai/f366876b1f471fd147de24f2154d7a13.json.zst.enc"))

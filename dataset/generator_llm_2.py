@@ -48,14 +48,14 @@ ALIVE_FILE = f"{CONTAINER_LABEL}_{os.getpid()}_im_alive.txt"
 
 def inform_alive(current_md5):
     with open(ALIVE_FILE, "w+") as f:
-        f.write(
-            datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S") + " " +
-            summarizer.performance_info() + " " +
-            current_md5 + " " +
-            SUMMARIZER + " " +
-            CONTAINER_LABEL + " " +
-            str(PROCESSED_BOOKS) + "\n"
-        )
+        f.write(json.dumps({
+            "datetime": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+            "summarizer_performance": summarizer.performance_info(),
+            "file_id": current_md5,
+            "summarizer": SUMMARIZER,
+            "container_label": CONTAINER_LABEL,
+            "processed_books": PROCESSED_BOOKS,
+        }, indent=2))
     WEBDAV_CLIENT.upload_file(ALIVE_FILE, ALIVE_FILE)
 
 
