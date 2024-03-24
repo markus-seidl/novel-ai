@@ -19,7 +19,10 @@ def upload_files(local_directory, remote_directory):
 
     client = Client(options)
 
-    client.mkdir(remote_directory)
+    try:
+        client.mkdir(remote_directory)
+    except:
+        print(f"mkdir failed {remote_directory}")
 
     pbar = tqdm(os.walk(local_directory))
     for dirpath, dirs, files in pbar:
@@ -31,7 +34,10 @@ def upload_files(local_directory, remote_directory):
 
             # Ensure the remote subdirectory exists
             remote_subdir = os.path.dirname(remote_path)
-            client.mkdir(remote_subdir)
+            try:
+                client.mkdir(remote_subdir)
+            except:
+                print(f"mkdir failed {remote_directory}")
 
             try:
                 remote_size = client.info(remote_path)['size']

@@ -1,0 +1,5 @@
+
+# https://github.com/OpenAccess-AI-Collective/axolotl/issues/1211#issuecomment-1913583544
+# conda install gcc_linux-64 gxx_linux-64
+# conda install -c conda-forge mpich
+# pip install mpi4py

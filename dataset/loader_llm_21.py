@@ -45,11 +45,11 @@ def transform_book(
                 continue
 
             # create empty prompt with summary
-            ret.append({
-                "instruction": chunk.summary,
-                "input": "",
-                "output": " ".join(sentences[0:cnt_next_sentences]),
-            })
+            # ret.append({
+            #     "instruction": chunk.summary,
+            #     "input": "",
+            #     "output": " ".join(sentences[0:cnt_next_sentences]),
+            # })
 
             for idx in range(cnt_previous_sentences, len(sentences), window_step_size):
                 # Fill until min_prev_length is reached
@@ -65,6 +65,9 @@ def transform_book(
                 while len(next_sentences_text) < min_next_length and next_idx < len(sentences):
                     next_sentences_text = " ".join(sentences[idx:next_idx])
                     next_idx += 1
+
+                if len(chunk.summary) == 0 or len(previous_sentences_text) == 0 or len(next_sentences_text) == 0:
+                    continue
 
                 ret.append({
                     "instruction": chunk.summary,
