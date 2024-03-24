@@ -1,0 +1,3 @@
+
+# CMAKE_ARGS="-DLLAMA_METAL=on" pip install llama-cpp-python
+llama-cpp-python
