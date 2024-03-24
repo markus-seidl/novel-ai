@@ -8,7 +8,7 @@ import multiprocessing
 from datasets import Dataset
 
 
-def download_input_data(webdav_folder: str, local_folder: str) -> [str]:
+def download_input_data(webdav_folder: str, local_folder: str, max_files) -> [str]:
     webdav_client = Client({
         'webdav_hostname': os.environ.get('WEBDAV_HOSTNAME'),
         'webdav_login': os.environ.get('WEBDAV_USER'),
@@ -16,6 +16,7 @@ def download_input_data(webdav_folder: str, local_folder: str) -> [str]:
         'disable_check': True
     })
 
+    downloaded = 0
     remote_files = webdav_client.list(webdav_folder)
     pbar = tqdm(remote_files)
     for file in pbar:
@@ -24,6 +25,11 @@ def download_input_data(webdav_folder: str, local_folder: str) -> [str]:
 
         if not os.path.exists(local_file):
             webdav_client.download_file(webdav_folder + '/' + file, local_file)
+
+        if 0 < max_files < downloaded:
+            break
+
+        downloaded += 1
 
 
 def transform_book(
@@ -85,8 +91,9 @@ def load_summary_book(json_string: str) -> SummaryBook:
     )
 
 
-def transform_input_data(local_folder: str) -> [{str, str}]:
+def transform_input_data(local_folder: str, max_files: int) -> [{str, str}]:
     ret: [{str, str}] = []
+    transformed = 0
     pbar = tqdm(os.listdir(local_folder))
     for file in pbar:
         pbar.set_description(f"Transforming {file}")
@@ -96,13 +103,18 @@ def transform_input_data(local_folder: str) -> [{str, str}]:
         data = transform_book(book_summary)
         ret.extend(data)
 
+        if 0 < max_files < transformed:
+            break
+
+        transformed += 1
+
     return ret
 
 
-def load_novel_dataset(local_temp, formatting_prompts_func, test_data_size_percent=0.15, num_proc=1):
+def load_novel_dataset(local_temp, formatting_prompts_func, test_data_size_percent=0.15, num_proc=1, max_files=-1):
     os.makedirs(local_temp, exist_ok=True)
-    download_input_data('/output_llm_dataset/', local_temp)
-    data = transform_input_data(local_temp)
+    download_input_data('/output_llm_dataset/', local_temp, max_files)
+    data = transform_input_data(local_temp, max_files)
     print("Generated ", len(data))
     ds = Dataset.from_list(data)
     ds = ds.map(formatting_prompts_func, batched=True, num_proc=num_proc)

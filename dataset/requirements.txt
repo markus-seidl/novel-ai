@@ -2,7 +2,7 @@ nltk
 bert-extractive-summarizer
 sentence-transformers
 torch
-gpt4all
+# gpt4all
 tqdm
 zstandard
 textsum
