@@ -17,7 +17,7 @@ test_datasets:
     type: alpaca
 dataset_prepared_path:
 val_set_size: 0.01
-output_dir: ./out
+output_dir: ./model
 adapter: qlora
 lora_model_dir:
 sequence_len: 1800
