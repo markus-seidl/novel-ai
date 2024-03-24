@@ -117,7 +117,10 @@ def load_novel_dataset(local_temp, formatting_prompts_func, test_data_size_perce
     data = transform_input_data(local_temp, max_files)
     print("Generated ", len(data))
     ds = Dataset.from_list(data)
-    ds = ds.map(formatting_prompts_func, batched=True, num_proc=num_proc)
+
+    if formatting_prompts_func is not None:
+        ds = ds.map(formatting_prompts_func, batched=True, num_proc=num_proc)
+
     ds = ds.train_test_split(test_size=test_data_size_percent, shuffle=True, seed=0xAFFE)
     print("Train size: ", len(ds['train']), "Test size: ", len(ds['test']))
     return ds
