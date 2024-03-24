@@ -109,8 +109,8 @@ def convert_all(temp_dir: str):
 
     os.makedirs(temp_dir, exist_ok=True)
 
-    # SERVER_INPUT_PATH = "/literotica_inputdata/"
-    SERVER_INPUT_PATH = "/dedup_inputdata/"
+    SERVER_INPUT_PATH = "/literotica_inputdata/"
+    # SERVER_INPUT_PATH = "/dedup_inputdata/"
     SERVER_OUTPUT_PATH = "/output_llm_dataset/"
 
     files_to_do = WEBDAV_CLIENT.list(SERVER_INPUT_PATH)
