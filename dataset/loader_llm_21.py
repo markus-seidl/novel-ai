@@ -114,7 +114,7 @@ def transform_input_data(local_folder: str, max_files: int) -> [{str, str}]:
     return ret
 
 
-def load_novel_dataset(local_temp, formatting_prompts_func, test_data_size_percent=0.15, num_proc=1, max_files=-1):
+def load_novel_dataset(local_temp, formatting_prompts_func, test_data_size_percent=0.15, num_proc=1, max_files=-1, split=True):
     os.makedirs(local_temp, exist_ok=True)
     download_input_data('/output_llm_dataset/', local_temp, max_files)
     data = transform_input_data(local_temp, max_files)
@@ -124,8 +124,9 @@ def load_novel_dataset(local_temp, formatting_prompts_func, test_data_size_perce
     if formatting_prompts_func is not None:
         ds = ds.map(formatting_prompts_func, batched=True, num_proc=num_proc)
 
-    ds = ds.train_test_split(test_size=test_data_size_percent, shuffle=True, seed=0xAFFE)
-    print("Train size: ", len(ds['train']), "Test size: ", len(ds['test']))
+    if split:
+        ds = ds.train_test_split(test_size=test_data_size_percent, shuffle=True, seed=0xAFFE)
+        print("Train size: ", len(ds['train']), "Test size: ", len(ds['test']))
     return ds
 
 

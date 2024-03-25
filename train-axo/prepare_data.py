@@ -28,6 +28,6 @@ if __name__ == '__main__':
             texts.append(text)
         return {"text": texts, "prompt": texts, }
 
-    ds: Dataset = loader_llm_21.load_novel_dataset(local_temp, formatting_prompts_func)
+    ds: Dataset = loader_llm_21.load_novel_dataset(local_temp, formatting_prompts_func, split=False)
     ds.to_json("./dataset/data.jsonl")
-    # ds.save_to_disk("./dataset")
+    ds.save_to_disk("./dataset-save-to-disk")
