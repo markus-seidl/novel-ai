@@ -33,14 +33,14 @@ lora_target_linear: true
 lora_fan_in_fan_out:
 lora_target_modules:
 
-wandb_project:
+wandb_project: novel-ai-01
 wandb_entity:
 wandb_watch:
 wandb_name:
-wandb_log_model:
+wandb_log_model: checkpoint
 
-gradient_accumulation_steps: 8
-micro_batch_size: 3
+gradient_accumulation_steps: 1
+micro_batch_size: 1
 
 optimizer: adamw_bnb_8bit
 lr_scheduler: cosine
@@ -66,11 +66,11 @@ eval_table_max_new_tokens: 128
 
 num_epochs: 1
 save_steps: 1
-max_steps: 2
+max_steps: 1
 
 debug:
 # do use --use_deepspeed
-# deepspeed: deepspeed_configs/zero1.json
+deepspeed: deepspeed_configs/zero1.json
 
 weight_decay: 0.0
 fsdp:
