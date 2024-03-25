@@ -54,16 +54,27 @@ def _prepare_packed_dataloader(
 
 
 if __name__ == "__main__":
-    MODEL = "unsloth/gemma-7b-bnb-4bit"
+    MODEL = "unsloth/gemma-7b-it"
     tokenizer = AutoTokenizer.from_pretrained(MODEL)
-    dataset = Dataset.load_from_disk("../train-axo/dataset-save-to-disk/")
+    raw_dataset = Dataset.load_from_disk("../train-axo/dataset-save-to-disk/")
 
-    print("Loaded", len(dataset))
+    print("Loaded", len(raw_dataset))
+
+    dataset = raw_dataset.train_test_split(test_size=0.05, shuffle=True, seed=0xAFFE)
 
     print("Tokenizing...")
-    tokenized = _prepare_packed_dataloader(
+    tokenized_train = _prepare_packed_dataloader(
         tokenizer,
-        dataset,
+        dataset['train'],
+        "text",
+        2048,
+        1024,  # default
+        3.6,  # default
+        None,
+    )
+    tokenized_test = _prepare_packed_dataloader(
+        tokenizer,
+        dataset['test'],
         "text",
         2048,
         1024,  # default
@@ -71,9 +82,8 @@ if __name__ == "__main__":
         None,
     )
 
-    print("Tokenized", len(tokenized))
+    print("Tokenized", len(tokenized_train), len(tokenized_test))
 
-    print("Columns", tokenized.column_names)
-
-    tokenized.save_to_disk("./tokenized")
+    tokenized_train.save_to_disk("./tokenized_train")
+    tokenized_test.save_to_disk("./tokenized_test")
 
