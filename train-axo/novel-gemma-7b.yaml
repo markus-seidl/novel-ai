@@ -3,8 +3,8 @@ base_model: unsloth/gemma-7b-it
 model_type: AutoModelForCausalLM
 tokenizer_type: AutoTokenizer
 trust_remote_code: true
-load_in_8bit: true
-load_in_4bit: false
+# load_in_8bit: true
+# load_in_4bit: false
 strict: false
 # rl: dpo
 
@@ -19,8 +19,9 @@ datasets:
       - data.jsonl
 
 val_set_size: 0.01
-
+dataset_prepared_path: ./prepared_dataset
 output_dir: ./model
+
 adapter: lora
 lora_model_dir:
 sequence_len: 2048
@@ -30,8 +31,15 @@ lora_r: 16
 lora_alpha: 16
 lora_dropout: 0.05
 lora_target_linear: true
-lora_fan_in_fan_out:
+#lora_fan_in_fan_out:
 lora_target_modules:
+  - q_proj
+  - v_proj
+  - k_proj
+  - o_proj
+  - gate_proj
+  - down_proj
+  - up_proj
 
 wandb_project: novel-ai-01
 wandb_entity:
@@ -47,23 +55,23 @@ lr_scheduler: cosine
 learning_rate: 5e-7
 train_on_inputs: false
 group_by_length: false
-#bf16: true
+
+bf16: true
 #fp16: false
 #tf32: true
+
 gradient_checkpointing: true
+
 early_stopping_patience:
 resume_from_checkpoint:
-local_rank:
+
 logging_steps: 1
 xformers_attention:
 flash_attention: false
 
 warmup_ratio: 0.1
-evals_per_epoch: 4
 
-eval_table_size:
-eval_table_max_new_tokens: 128
-
+eval_steps:
 num_epochs: 1
 save_steps: 1
 max_steps: 1
@@ -76,5 +84,5 @@ weight_decay: 0.0
 fsdp:
 fsdp_config:
 special_tokens:
-dataset_prepared_path: ./prepared_dataset
+
 
