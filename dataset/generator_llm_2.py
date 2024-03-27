@@ -3,6 +3,7 @@ import datetime
 import json
 import os
 import random
+import re
 import socket
 
 import zstandard
@@ -28,6 +29,29 @@ print("Connected to webdav, root contents: ", WEBDAV_CLIENT.list("/"))
 
 CONTAINER_LABEL = os.environ.get("VAST_CONTAINERLABEL") or "UNKNOWN"
 PROCESSED_BOOKS = 0
+
+NEEDED_WORDS = os.environ.get("NEEDED_WORDS")
+if NEEDED_WORDS != "":
+    temp = {}
+    for word in NEEDED_WORDS.split(","):
+        temp[str(word).lower()] = True
+    NEEDED_WORDS = temp
+
+
+def count_words(dictionary: {str: bool}, text: str) -> ({str: int}, int):
+    counts = {word: 0 for word in dictionary}
+
+    # Split the text into words
+    words = re.findall(r'\b\w+\b', text.lower())
+    sum = 0
+
+    # Count occurrences for each word in dictionary
+    for word in words:
+        if word in counts:
+            counts[word] += 1
+            sum += 1
+
+    return counts, sum
 
 
 def get_local_ip():
@@ -88,11 +112,18 @@ def write_and_compress(summary_book: [SummaryBook], outfile: str):
     mycrypt.save_file_txt(json_data, outfile)
 
 
-def generate_for(input_file: str, output_file: str, title: str, precompiled_summaries: {(str, str): str}, md5):
+def generate_for(input_file: str, output_file: str, title: str, precompiled_summaries: {(str, str): str}, md5) -> bool:
     input_file_text = mycrypt.load_file_txt(input_file)
+    hist, count = count_words(NEEDED_WORDS, input_file_text)
+    print("Histogram", hist, "count", count)
+
+    if not count > 10:
+        return False
+
     book = load_book_from_text(input_file_text)
     summary_book = convert_to_summary_book(book, title, md5)
     write_and_compress(summary_book, output_file)
+    return True
 
 
 def webdav_exists_file(file_path: str) -> bool:
@@ -109,8 +140,8 @@ def convert_all(temp_dir: str):
 
     os.makedirs(temp_dir, exist_ok=True)
 
-    SERVER_INPUT_PATH = "/literotica_inputdata/"
-    # SERVER_INPUT_PATH = "/dedup_inputdata/"
+    # SERVER_INPUT_PATH = "/literotica_inputdata/"
+    SERVER_INPUT_PATH = "/dedup_inputdata/"
     SERVER_OUTPUT_PATH = "/output_llm_dataset/"
 
     files_to_do = WEBDAV_CLIENT.list(SERVER_INPUT_PATH)
@@ -140,14 +171,16 @@ def convert_all(temp_dir: str):
             input_file = os.path.join(temp_dir, file)
             output_file = os.path.join(temp_dir, file_id + "___" + SUMMARIZER.lower() + ".json")
 
-            generate_for(input_file, output_file, title, {}, file_id)
-            pbar.set_description(f"Uploading: {file_id}")
-            WEBDAV_CLIENT.upload_file(
-                SERVER_OUTPUT_PATH + file_id + ".json.zst.enc",
-                output_file + ".zst.enc"
-            )
+            generated = generate_for(input_file, output_file, title, {}, file_id)
 
-            PROCESSED_BOOKS += 1
+            if generated:
+                pbar.set_description(f"Uploading: {file_id}")
+                WEBDAV_CLIENT.upload_file(
+                    SERVER_OUTPUT_PATH + file_id + ".json.zst.enc",
+                    output_file + ".zst.enc"
+                )
+
+                PROCESSED_BOOKS += 1
     finally:
         if os.path.exists(input_file):
             os.remove(input_file)
