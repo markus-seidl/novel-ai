@@ -1,9 +1,10 @@
 #base_model: google/gemma-7b-it
-base_model: unsloth/gemma-7b-it
+#base_model: unsloth/gemma-7b-it
+base_model: TinyLlama/TinyLlama-1.1B-intermediate-step-1431k-3T
 model_type: AutoModelForCausalLM
 tokenizer_type: AutoTokenizer
 trust_remote_code: true
-# load_in_8bit: true
+load_in_8bit: true
 # load_in_4bit: false
 strict: false
 # rl: dpo
@@ -56,7 +57,7 @@ learning_rate: 5e-7
 train_on_inputs: false
 group_by_length: false
 
-bf16: true
+#bf16: true
 #fp16: false
 #tf32: true
 
