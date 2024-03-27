@@ -49,7 +49,6 @@ wandb_name: tinyllama
 wandb_log_model: checkpoint
 
 gradient_accumulation_steps: 1
-micro_batch_size: 1
 
 optimizer: adamw_bnb_8bit
 lr_scheduler: cosine
@@ -72,10 +71,12 @@ flash_attention: false
 
 warmup_ratio: 0.5
 
+micro_batch_size: 10
+
 eval_steps:
 num_epochs: 1
-save_steps: 1
-max_steps: 1
+save_steps: 10
+# max_steps: 1
 
 debug:
 # do use --use_deepspeed
