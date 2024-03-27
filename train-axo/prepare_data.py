@@ -1,3 +1,5 @@
+#!/usr/bin/python3
+
 import sys
 from datasets import Dataset
 
@@ -30,4 +32,4 @@ if __name__ == '__main__':
 
     ds: Dataset = loader_llm_21.load_novel_dataset(local_temp, formatting_prompts_func, split=False)
     ds.to_json("./dataset/data.jsonl")
-    ds.save_to_disk("./dataset-save-to-disk")
+    # ds.save_to_disk("./dataset-save-to-disk")
