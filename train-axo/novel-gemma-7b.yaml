@@ -45,7 +45,7 @@ lora_target_modules:
 wandb_project: novel-ai-01
 wandb_entity:
 wandb_watch:
-wandb_name:
+wandb_name: tinyllama
 wandb_log_model: checkpoint
 
 gradient_accumulation_steps: 1
@@ -70,7 +70,7 @@ logging_steps: 1
 xformers_attention:
 flash_attention: false
 
-warmup_ratio: 0.1
+warmup_ratio: 0.5
 
 eval_steps:
 num_epochs: 1
