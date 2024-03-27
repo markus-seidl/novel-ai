@@ -33,7 +33,7 @@ def download_input_data(webdav_folder: str, local_folder: str, max_files) -> [st
 
 
 def transform_book(
-        book: SummaryBook, cnt_previous_sentences=3, min_prev_length=50, cnt_next_sentences=2, min_next_length=50,
+        book: SummaryBook, cnt_previous_sentences=3, min_prev_length=50, cnt_next_sentences=2, min_next_length=200,
         window_step_size=3
 ) -> [{str, str}]:
     ret = []
