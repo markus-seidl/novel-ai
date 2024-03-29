@@ -1,3 +1,4 @@
+import dataclasses
 import sys
 from datetime import datetime
 import os
@@ -57,7 +58,7 @@ print(json.dumps({
     "MODEL_OUTPUT_DIR": MODEL_OUTPUT_DIR
 }, indent=4))
 
-print(json.dumps(TRAINING_ARGUMENTS, indent=4))
+print(json.dumps(dataclasses.asdict(TRAINING_ARGUMENTS), indent=4))
 
 os.environ['WANDB_NAME'] = RUN_ID
 os.environ['WANDB_PROJECT'] = "novel-ai-01"
@@ -141,4 +142,11 @@ print(f"Peak reserved memory for training % of max memory = {lora_percentage} %.
 model.save_pretrained(MODEL_OUTPUT_DIR + "model-save-pretrained")
 model.save_pretrained_merged(MODEL_OUTPUT_DIR + "model-pretrained-merged")
 tokenizer.save_pretrained(MODEL_OUTPUT_DIR + "tokenizer_save_pretrained")
+
+#### Upload result
+
+sys.path.insert(1, '../../util')
+
+import upload
+upload.upload_files(MODEL_OUTPUT_DIR, "/models/" + RUN_ID + "/")
 
