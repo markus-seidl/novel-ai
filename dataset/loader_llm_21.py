@@ -114,12 +114,26 @@ def transform_input_data(local_folder: str, max_files: int) -> [{str, str}]:
     return ret
 
 
-def load_novel_dataset(local_temp, formatting_prompts_func, test_data_size_percent=0.15, num_proc=1, max_files=-1, split=True):
+def load_novel_dataset(local_temp, formatting_prompts_func, test_data_size_percent=0.15, num_proc=1, max_files=-1,
+                       split=True):
     os.makedirs(local_temp, exist_ok=True)
     download_input_data('/output_llm_dataset/', local_temp, max_files)
     data = transform_input_data(local_temp, max_files)
     print("Generated ", len(data))
     ds = Dataset.from_list(data)
+
+    # REMOVE
+    # TO_FIND = []
+    #
+    # for d in data:
+    #     # "instruction": chunk.summary,
+    #     #                     "input": previous_sentences_text,
+    #     #                     "output": next_sentences_text,
+    #     for tf in TO_FIND:
+    #         if tf in d['instruction']:
+    #             print(d['instruction'])
+    #
+    # /REMOVE
 
     if formatting_prompts_func is not None:
         ds = ds.map(formatting_prompts_func, batched=True, num_proc=num_proc)
