@@ -124,29 +124,32 @@ max_memory = round(gpu_stats.total_memory / 1024 / 1024 / 1024, 3)
 print(f"GPU = {gpu_stats.name}. Max memory = {max_memory} GB.")
 print(f"{start_gpu_memory} GB of memory reserved.")
 
-trainer_stats = trainer.train()
+try:
+    trainer_stats = trainer.train()
 
-# AFTER TRAINING GPU STATS
+    # AFTER TRAINING GPU STATS
 
-used_memory = round(torch.cuda.max_memory_reserved() / 1024 / 1024 / 1024, 3)
-used_memory_for_lora = round(used_memory - start_gpu_memory, 3)
-used_percentage = round(used_memory / max_memory * 100, 3)
-lora_percentage = round(used_memory_for_lora / max_memory * 100, 3)
-print(f"{trainer_stats.metrics['train_runtime']} seconds used for training.")
-print(f"{round(trainer_stats.metrics['train_runtime'] / 60, 2)} minutes used for training.")
-print(f"Peak reserved memory = {used_memory} GB.")
-print(f"Peak reserved memory for training = {used_memory_for_lora} GB.")
-print(f"Peak reserved memory % of max memory = {used_percentage} %.")
-print(f"Peak reserved memory for training % of max memory = {lora_percentage} %.")
+    used_memory = round(torch.cuda.max_memory_reserved() / 1024 / 1024 / 1024, 3)
+    used_memory_for_lora = round(used_memory - start_gpu_memory, 3)
+    used_percentage = round(used_memory / max_memory * 100, 3)
+    lora_percentage = round(used_memory_for_lora / max_memory * 100, 3)
+    print(f"{trainer_stats.metrics['train_runtime']} seconds used for training.")
+    print(f"{round(trainer_stats.metrics['train_runtime'] / 60, 2)} minutes used for training.")
+    print(f"Peak reserved memory = {used_memory} GB.")
+    print(f"Peak reserved memory for training = {used_memory_for_lora} GB.")
+    print(f"Peak reserved memory % of max memory = {used_percentage} %.")
+    print(f"Peak reserved memory for training % of max memory = {lora_percentage} %.")
+except KeyboardInterrupt:
+    print("Interrupted by user. Saving model and uploading it...")
+finally:
+    model.save_pretrained(MODEL_OUTPUT_DIR + "model-save-pretrained")
+    model.save_pretrained_merged(MODEL_OUTPUT_DIR + "model-pretrained-merged")
+    tokenizer.save_pretrained(MODEL_OUTPUT_DIR + "tokenizer_save_pretrained")
 
-model.save_pretrained(MODEL_OUTPUT_DIR + "model-save-pretrained")
-model.save_pretrained_merged(MODEL_OUTPUT_DIR + "model-pretrained-merged")
-tokenizer.save_pretrained(MODEL_OUTPUT_DIR + "tokenizer_save_pretrained")
+    #### Upload result
 
-#### Upload result
+    sys.path.insert(1, '../../util')
 
-sys.path.insert(1, '../../util')
-
-import upload
-upload.upload_files(MODEL_OUTPUT_DIR, "/models/" + RUN_ID + "/")
+    import upload
+    upload.upload_files(MODEL_OUTPUT_DIR, "/models/" + RUN_ID + "/")
 
