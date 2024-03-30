@@ -49,6 +49,7 @@ TRAINING_ARGUMENTS = TrainingArguments(
     weight_decay=0.01,
     lr_scheduler_type="linear",
     seed=0xAFFE,
+    save_total_limit=15,
     output_dir=MODEL_OUTPUT_DIR + "/trainer_out/",
 )
 
