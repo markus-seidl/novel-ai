@@ -143,14 +143,14 @@ try:
 except KeyboardInterrupt:
     print("Interrupted by user. Saving model and uploading it...")
 finally:
-    model.save_pretrained(MODEL_OUTPUT_DIR + "model-save-pretrained")
-    model.save_pretrained_merged(MODEL_OUTPUT_DIR + "model-pretrained-merged")
-    tokenizer.save_pretrained(MODEL_OUTPUT_DIR + "tokenizer_save_pretrained")
+    model.save_pretrained(MODEL_OUTPUT_DIR + "/model-save-pretrained")
+    model.save_pretrained_merged(MODEL_OUTPUT_DIR + "/model-pretrained-merged")
+    tokenizer.save_pretrained(MODEL_OUTPUT_DIR + "/tokenizer_save_pretrained")
 
     #### Upload result
 
     sys.path.insert(1, '../../util')
 
     import upload
-    upload.upload_files(MODEL_OUTPUT_DIR, "/models/" + RUN_ID + "/")
+    upload.upload_files(MODEL_OUTPUT_DIR, "/models/auto-upload-" + RUN_ID + "/")
 
