@@ -73,7 +73,7 @@ def convert_all(book_files: [(str, str)], enc_output_directory: str, temp_dir: s
 
 
 if __name__ == "__main__":
-    book_files = get_all_files_in_directory("/Volumes/Dia/ai-data/RAW/anna-manual/In/")
+    book_files = get_all_files_in_directory("/Volumes/Dia/ai-data/RAW/kindle-manual/In/")
     enc_output_directory = "../train_data/enc_inputdata/"
     temp_dir = "../train_data/conv_temp/"
     convert_all(book_files, enc_output_directory, temp_dir)
