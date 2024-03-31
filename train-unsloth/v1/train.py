@@ -21,24 +21,27 @@ import custom_sfttrainer
 #                                               CONFIGURATION
 ################################################################################################
 
-BASE_MODEL = "unsloth/tinyllama"
+# BASE_MODEL = "unsloth/tinyllama"
+# BASE_MODEL = "/home/tiny_epoch_base/"
+# BASE_MODEL = "unsloth/mistral-7b-v0.2-bnb-4bit"
+BASE_MODEL = "/home/mistral-test-1/"
 
 max_seq_length = 2048  # Choose any! We auto support RoPE Scaling internally!
 dtype = None  # None for auto detection. Float16 for Tesla T4, V100, Bfloat16 for Ampere+
-load_in_4bit = False  # Use 4bit quantization to reduce memory usage. Can be False.
-LORA_R = 16  # Choose any number > 0 ! Suggested 8, 16, 32, 64, 128
+load_in_4bit = True  # Use 4bit quantization to reduce memory usage. Can be False.
+LORA_R = 32  # Choose any number > 0 ! Suggested 8, 16, 32, 64, 128
 CPU_COUNT = 8
 
-RUN_ID = datetime.now().strftime("tinyllama-%y%m%d_%H%M")
+RUN_ID = datetime.now().strftime("mistral-%y%m%d_%H%M")
 MODEL_OUTPUT_DIR = os.path.abspath("./models/" + RUN_ID + "/")
 
 TRAINING_ARGUMENTS = TrainingArguments(
-    per_device_train_batch_size=90,
+    per_device_train_batch_size=64,
     gradient_accumulation_steps=1,
     warmup_steps=100,
     # max_steps = 60,
-    num_train_epochs=7,
-    learning_rate=5e-5,
+    num_train_epochs=2,
+    learning_rate=5e-6,
     fp16=not torch.cuda.is_bf16_supported(),
     bf16=torch.cuda.is_bf16_supported(),
     logging_steps=1,
@@ -97,7 +100,9 @@ if not os.path.exists("./tokenized_train"):
     prepare_dataset.generate_tokenized_dataset(
         BASE_MODEL,
         "./tokenized_train",
-        "./tokenized_test"
+        "./tokenized_test",
+        test_size=0.02,
+        seed=None,
     )
 
 dataset_train = Dataset.load_from_disk("./tokenized_train")
@@ -116,6 +121,7 @@ trainer = custom_sfttrainer.CustomSFTTrainer(
     dataset_num_proc=CPU_COUNT,
     packing=False,  # Packs short sequences together to save time!
     args=TRAINING_ARGUMENTS,
+    report_to="wandb"
 )
 
 # GPU STATS

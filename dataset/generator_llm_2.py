@@ -99,6 +99,7 @@ def convert_to_summary_book(
         summary_book.chapters.append(summary_chapter)
         for chunk in tqdm(chunks):
             chunk_summary = summarizer.summarize_text(chunk)
+            print(chunk_summary[0:100] if len(chunk_summary) > 100 else chunk_summary)
 
             chunk_sentences = sent_tokenize(chunk)
 
