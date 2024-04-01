@@ -37,8 +37,11 @@ if NEEDED_WORDS != "":
         temp[str(word).lower()] = True
     NEEDED_WORDS = temp
 
+CURRENT_BOOK_HIST = {}
+
 
 def count_words(dictionary: {str: bool}, text: str) -> ({str: int}, int):
+    global CURRENT_BOOK_HIST
     counts = {word: 0 for word in dictionary}
 
     # Split the text into words
@@ -51,6 +54,7 @@ def count_words(dictionary: {str: bool}, text: str) -> ({str: int}, int):
             counts[word] += 1
             sum += 1
 
+    CURRENT_BOOK_HIST = counts
     return counts, sum
 
 
@@ -73,12 +77,13 @@ ALIVE_FILE = f"{CONTAINER_LABEL}_{os.getpid()}_im_alive.txt"
 def inform_alive(current_md5):
     with open(ALIVE_FILE, "w+") as f:
         f.write(json.dumps({
-            "datetime": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+            "datetime_utc": datetime.datetime.now(tz=datetime.UTC).strftime("%Y-%m-%d %H:%M:%S"),
             "summarizer_performance": summarizer.performance_info(),
             "file_id": current_md5,
             "summarizer": SUMMARIZER,
             "container_label": CONTAINER_LABEL,
             "processed_books": PROCESSED_BOOKS,
+            "current_book_hist": CURRENT_BOOK_HIST,
         }, indent=2))
     WEBDAV_CLIENT.upload_file(ALIVE_FILE, ALIVE_FILE)
 
