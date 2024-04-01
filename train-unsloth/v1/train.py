@@ -151,7 +151,7 @@ except KeyboardInterrupt:
 finally:
     model.save_pretrained(MODEL_OUTPUT_DIR + "/model-save-pretrained")
     model.save_pretrained_merged(MODEL_OUTPUT_DIR + "/model-pretrained-merged")
-    tokenizer.save_pretrained(MODEL_OUTPUT_DIR + "/tokenizer_save_pretrained")
+    tokenizer.save_pretrained(MODEL_OUTPUT_DIR + "/model-pretrained-merged")
 
     #### Upload result
 
