@@ -77,7 +77,7 @@ ALIVE_FILE = f"{CONTAINER_LABEL}_{os.getpid()}_im_alive.txt"
 def inform_alive(current_md5):
     with open(ALIVE_FILE, "w+") as f:
         f.write(json.dumps({
-            "datetime_utc": datetime.datetime.now(tz=datetime.UTC).strftime("%Y-%m-%d %H:%M:%S"),
+            "datetime_utc": datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S"),
             "summarizer_performance": summarizer.performance_info(),
             "file_id": current_md5,
             "summarizer": SUMMARIZER,
